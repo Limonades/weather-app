@@ -1,4 +1,7 @@
 import React from 'react';
+import { callApi } from '../utils/Api';
+import { DOMAIN_URL, KEY } from '../constants/ApiConstants';
+import { Loader } from '../constants/Loader';
 
 class App extends React.Component {
   constructor() {
@@ -7,6 +10,8 @@ class App extends React.Component {
     this.state = {
       search: '',
       temp: null,
+      error: null,
+      isLoading: false,
     };
   }
 
@@ -17,6 +22,9 @@ class App extends React.Component {
 
     this.setState({
       search: '',
+      temp: null,
+      error: null,
+      isLoading: true,
     });
   };
 
@@ -28,24 +36,25 @@ class App extends React.Component {
 
   getData = () => {
     const { search } = this.state;
-    fetch(
-      `https://api.weatherbit.io/v2.0/current?city=${search}&key=8fab1e8c72554b01807ac34da3e2cbfc`
-    )
-      .then(response => response.json())
+    callApi(`${DOMAIN_URL}/current?city=${search}&key=${KEY}`)
       .then(response => {
-        console.log(response);
-
-        console.log(response.data[0].temp);
-
         this.setState({
           temp: response.data[0].temp,
+          error: null,
+          isLoading: false,
         });
       })
-      .catch(console.error);
+      .catch(err => {
+        this.setState({
+          error: err.message,
+          temp: null,
+          isLoading: false,
+        });
+      });
   };
 
   render() {
-    const { search, temp } = this.state;
+    const { search, temp, error, isLoading } = this.state;
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
@@ -54,6 +63,8 @@ class App extends React.Component {
         </form>
 
         {temp ? <p style={{ fontSize: `${36}px` }}>{temp} градусиков</p> : null}
+        {error ? <p style={{ fontSize: `${36}px` }}>{error}</p> : null}
+        {isLoading ? <Loader /> : null}
       </div>
     );
   }
