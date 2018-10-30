@@ -3,6 +3,7 @@ import React from 'react';
 class Day extends React.Component {
   render() {
     const { arr } = this.props;
+    // TODO change days to actual
     const week = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
     return (
       <div style={{ display: `flex` }}>
