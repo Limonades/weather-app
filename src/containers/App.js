@@ -2,16 +2,18 @@ import React from 'react';
 import { callApi } from '../utils/Api';
 import { DOMAIN_URL, KEY } from '../constants/ApiConstants';
 import { Loader } from '../constants/Loader';
+import Day from '../components/Day';
 
 class App extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      search: '',
+      search: 'odessa',
       temp: null,
       error: null,
       isLoading: false,
+      arr: [],
     };
   }
 
@@ -25,6 +27,7 @@ class App extends React.Component {
       temp: null,
       error: null,
       isLoading: true,
+      arr: [],
     });
   };
 
@@ -36,12 +39,14 @@ class App extends React.Component {
 
   getData = () => {
     const { search } = this.state;
-    callApi(`${DOMAIN_URL}/current?city=${search}&key=${KEY}`)
+    callApi(`${DOMAIN_URL}/forecast/daily?city=${search}&key=${KEY}`)
       .then(response => {
+        console.log(response.data);
         this.setState({
           temp: response.data[0].temp,
           error: null,
           isLoading: false,
+          arr: response.data,
         });
       })
       .catch(err => {
@@ -54,7 +59,8 @@ class App extends React.Component {
   };
 
   render() {
-    const { search, temp, error, isLoading } = this.state;
+    const { search, temp, error, isLoading, arr } = this.state;
+    console.log(arr);
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
@@ -62,9 +68,10 @@ class App extends React.Component {
           <button type="submit">search</button>
         </form>
 
-        {temp ? <p style={{ fontSize: `${36}px` }}>{temp} градусиков</p> : null}
-        {error ? <p style={{ fontSize: `${36}px` }}>{error}</p> : null}
+        {temp ? <p style={{ fontSize: `${36}px` }}>сейчас в {temp} градусиков</p> : null}
+        {error ? <p style={{ fontSize: `${36}px`, color: 'brown' }}>{error}</p> : null}
         {isLoading ? <Loader /> : null}
+        {arr ? <Day arr={arr} /> : null}
       </div>
     );
   }
