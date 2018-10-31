@@ -2,6 +2,7 @@ import React from 'react';
 
 class Day extends React.Component {
   defineDay = ts => {
+    // console.log(new Date(1000 * ts));
     switch (new Date(1000 * ts).getDay()) {
       case 0:
         return 'Sunday';

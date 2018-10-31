@@ -16,32 +16,16 @@ class App extends React.Component {
       error: null,
       isLoading: false,
       weekTemp: null,
+      lat: '',
+      lng: '',
     };
   }
 
   handleSubmit = e => {
-    const { searchValue } = this.state;
     e.preventDefault();
     console.log('handle');
 
-    // callApi(`${DOMAIN_URL}/?city=${searchValue}&key=${KEY}`)
-    //   .then(response => {
-    //     this.setState({
-    //       // TODO если включить название города начинается путаница
-    //       requestName: response.city_name,
-    //       currentTemp: response.data[0].temp,
-    //       error: null,
-    //       isLoading: false,
-    //       weekTemp: response.data,
-    //     });
-    //   })
-    //   .catch(err => {
-    //     this.setState({
-    //       error: err.message,
-    //       currentTemp: null,
-    //       isLoading: false,
-    //     });
-    //   });
+    this.getData();
 
     this.setState({
       searchValue: '',
@@ -58,8 +42,11 @@ class App extends React.Component {
     });
   };
 
-  getData = (a, b) => {
-    callApi(`${DOMAIN_URL}/?lat=${a}&lon=${b}&key=${KEY}`)
+  getData = () => {
+    const { lat, lng } = this.state;
+    console.log(lat);
+    console.log(lng);
+    callApi(`${DOMAIN_URL}/?lat=${lat}&lon=${lng}&key=${KEY}`)
       .then(response => {
         this.setState({
           currentTemp: response.data[0].temp,
@@ -77,10 +64,6 @@ class App extends React.Component {
       });
   };
 
-  getLat = obj => obj.l.j;
-
-  getLon = obj => obj.l.l;
-
   render() {
     const { searchValue, currentTemp, error, isLoading, weekTemp, requestName } = this.state;
     // console.log(weekTemp);
@@ -97,20 +80,17 @@ class App extends React.Component {
                 this.setState({
                   requestName: place.formatted_address,
                   searchValue: '',
+                  lat: place.geometry.viewport.l.j,
+                  lng: place.geometry.viewport.l.l,
                 });
-
-                return this.getData(
-                  this.getLat(place.geometry.viewport),
-                  this.getLon(place.geometry.viewport)
-                );
+              } else {
+                this.setState({
+                  currentTemp: null,
+                  weekTemp: null,
+                  isLoading: false,
+                  error: 'It looks like a mistake in the request',
+                });
               }
-              // TODO почему стейт не меняется? (он меняется но страничка не обновляе)
-              return this.setState({
-                currentTemp: null,
-                weekTemp: null,
-                isLoading: false,
-                error: 'It looks like a mistake in the request',
-              });
             }}
             types={['(regions)']}
             componentRestrictions={{ country: 'ru' }}
