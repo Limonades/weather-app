@@ -1,4 +1,5 @@
 import React from 'react';
+import Autocomplete from 'react-google-autocomplete';
 import { callApi } from '../utils/Api';
 import { DOMAIN_URL, KEY } from '../constants/ApiConstants';
 import { Loader } from '../constants/Loader';
@@ -9,69 +10,123 @@ class App extends React.Component {
     super();
 
     this.state = {
-      search: 'odessa',
-      temp: null,
+      searchValue: '',
+      currentTemp: null,
+      requestName: null,
       error: null,
       isLoading: false,
-      arr: [],
+      weekTemp: null,
     };
   }
 
   handleSubmit = e => {
+    const { searchValue } = this.state;
     e.preventDefault();
+    console.log('handle');
 
-    this.getData();
+    // callApi(`${DOMAIN_URL}/?city=${searchValue}&key=${KEY}`)
+    //   .then(response => {
+    //     this.setState({
+    //       // TODO если включить название города начинается путаница
+    //       requestName: response.city_name,
+    //       currentTemp: response.data[0].temp,
+    //       error: null,
+    //       isLoading: false,
+    //       weekTemp: response.data,
+    //     });
+    //   })
+    //   .catch(err => {
+    //     this.setState({
+    //       error: err.message,
+    //       currentTemp: null,
+    //       isLoading: false,
+    //     });
+    //   });
 
     this.setState({
-      search: '',
-      temp: null,
+      searchValue: '',
+      currentTemp: null,
       error: null,
       isLoading: true,
-      arr: [],
+      weekTemp: null,
     });
   };
 
   handleChange = e => {
     this.setState({
-      search: e.target.value,
+      searchValue: e.target.value,
     });
   };
 
-  getData = () => {
-    const { search } = this.state;
-    callApi(`${DOMAIN_URL}/forecast/daily?city=${search}&key=${KEY}`)
+  getData = (a, b) => {
+    callApi(`${DOMAIN_URL}/?lat=${a}&lon=${b}&key=${KEY}`)
       .then(response => {
-        console.log(response.data);
         this.setState({
-          temp: response.data[0].temp,
+          currentTemp: response.data[0].temp,
           error: null,
           isLoading: false,
-          arr: response.data,
+          weekTemp: response.data,
         });
       })
       .catch(err => {
         this.setState({
           error: err.message,
-          temp: null,
+          currentTemp: null,
           isLoading: false,
         });
       });
   };
 
+  getLat = obj => obj.l.j;
+
+  getLon = obj => obj.l.l;
+
   render() {
-    const { search, temp, error, isLoading, arr } = this.state;
-    console.log(arr);
+    const { searchValue, currentTemp, error, isLoading, weekTemp, requestName } = this.state;
+    // console.log(weekTemp);
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
-          <input type="search" onChange={this.handleChange} value={search} />
+          <Autocomplete
+            value={searchValue}
+            onChange={this.handleChange}
+            style={{ width: '90%' }}
+            onPlaceSelected={place => {
+              if (place.geometry) {
+                console.log(place.formatted_address);
+                this.setState({
+                  requestName: place.formatted_address,
+                  searchValue: '',
+                });
+
+                return this.getData(
+                  this.getLat(place.geometry.viewport),
+                  this.getLon(place.geometry.viewport)
+                );
+              }
+              // TODO почему стейт не меняется? (он меняется но страничка не обновляе)
+              return this.setState({
+                currentTemp: null,
+                weekTemp: null,
+                isLoading: false,
+                error: 'It looks like a mistake in the request',
+              });
+            }}
+            types={['(regions)']}
+            componentRestrictions={{ country: 'ru' }}
+          />
           <button type="submit">search</button>
         </form>
 
-        {temp ? <p style={{ fontSize: `${36}px` }}>сейчас в {temp} градусиков</p> : null}
+        {currentTemp ? (
+          <div>
+            <h1>{requestName}</h1>
+            <p style={{ fontSize: `${36}px` }}>Now {currentTemp}° градусиков</p>
+          </div>
+        ) : null}
         {error ? <p style={{ fontSize: `${36}px`, color: 'brown' }}>{error}</p> : null}
         {isLoading ? <Loader /> : null}
-        {arr ? <Day arr={arr} /> : null}
+        {weekTemp ? <Day weekTemp={weekTemp} /> : null}
       </div>
     );
   }
