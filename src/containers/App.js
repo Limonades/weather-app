@@ -31,7 +31,6 @@ class App extends React.Component {
   };
 
   handleChange = e => {
-    console.log(e.target.value);
     this.setState({
       searchValue: e.target.value,
     });
@@ -59,7 +58,6 @@ class App extends React.Component {
     if (!lat && !lng && city !== '') {
       return callApi(`${DOMAIN_URL}/forecast/daily?city=${city}&key=${KEY}`)
         .then(response => {
-          console.log(response);
           this.setState({
             requestName: response.city_name,
             currentTemp: response.data[0].temp,
@@ -118,7 +116,6 @@ class App extends React.Component {
             onChange={this.handleChange}
             style={{ width: '50%' }}
             onPlaceSelected={place => {
-              console.log(place);
               if (place.geometry) {
                 const latC = place.geometry.viewport.l.j;
                 const lngC = place.geometry.viewport.l.l;
