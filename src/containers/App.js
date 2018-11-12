@@ -10,22 +10,43 @@ class App extends React.Component {
     super();
 
     this.state = {
+      requestName: '',
       searchValue: '',
       currentTemp: null,
-      requestName: null,
       error: null,
       isLoading: false,
       weekTemp: null,
-      lat: '',
-      lng: '',
+      lat: null,
+      lng: null,
     };
   }
 
   handleSubmit = e => {
     e.preventDefault();
-    console.log('handle');
+  };
 
-    this.getData();
+  handleClick = () => {
+    const { lat, lng, searchValue } = this.state;
+    this.getData(lat, lng, searchValue);
+  };
+
+  handleChange = e => {
+    console.log(e.target.value);
+    this.setState({
+      searchValue: e.target.value,
+    });
+  };
+
+  getData = (lat, lng, city) => {
+    if (!lat && !lng && city === '') {
+      return this.setState({
+        searchValue: '',
+        currentTemp: null,
+        error: 'Не в этот раз, петушок)',
+        isLoading: false,
+        weekTemp: null,
+      });
+    }
 
     this.setState({
       searchValue: '',
@@ -34,18 +55,28 @@ class App extends React.Component {
       isLoading: true,
       weekTemp: null,
     });
-  };
 
-  handleChange = e => {
-    this.setState({
-      searchValue: e.target.value,
-    });
-  };
+    if (!lat && !lng && city !== '') {
+      return callApi(`${DOMAIN_URL}/forecast/daily?city=${city}&key=${KEY}`)
+        .then(response => {
+          console.log(response);
+          this.setState({
+            requestName: response.city_name,
+            currentTemp: response.data[0].temp,
+            error: null,
+            isLoading: false,
+            weekTemp: response.data,
+          });
+        })
+        .catch(err => {
+          this.setState({
+            error: err.message,
+            currentTemp: null,
+            isLoading: false,
+          });
+        });
+    }
 
-  getData = () => {
-    const { lat, lng } = this.state;
-    console.log(lat);
-    console.log(lng);
     callApi(`${DOMAIN_URL}/?lat=${lat}&lon=${lng}&key=${KEY}`)
       .then(response => {
         this.setState({
@@ -53,6 +84,8 @@ class App extends React.Component {
           error: null,
           isLoading: false,
           weekTemp: response.data,
+          lng: null,
+          lat: null,
         });
       })
       .catch(err => {
@@ -60,42 +93,55 @@ class App extends React.Component {
           error: err.message,
           currentTemp: null,
           isLoading: false,
+          lng: null,
+          lat: null,
         });
       });
   };
 
   render() {
-    const { searchValue, currentTemp, error, isLoading, weekTemp, requestName } = this.state;
-    // console.log(weekTemp);
+    const {
+      requestName,
+      searchValue,
+      currentTemp,
+      error,
+      isLoading,
+      weekTemp,
+      lat,
+      lng,
+    } = this.state;
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
           <Autocomplete
             value={searchValue}
             onChange={this.handleChange}
-            style={{ width: '90%' }}
+            style={{ width: '50%' }}
             onPlaceSelected={place => {
+              console.log(place);
               if (place.geometry) {
-                console.log(place.formatted_address);
+                const latC = place.geometry.viewport.l.j;
+                const lngC = place.geometry.viewport.l.l;
+                const cityC = place.formatted_address;
+
                 this.setState({
-                  requestName: place.formatted_address,
+                  requestName: cityC,
                   searchValue: '',
-                  lat: place.geometry.viewport.l.j,
-                  lng: place.geometry.viewport.l.l,
+                  lat: latC,
+                  lng: lngC,
                 });
-              } else {
-                this.setState({
-                  currentTemp: null,
-                  weekTemp: null,
-                  isLoading: false,
-                  error: 'It looks like a mistake in the request',
-                });
+
+                return this.getData(latC, lngC, cityC);
               }
+              const city = place.name;
+
+              this.getData(lat, lng, city);
             }}
             types={['(regions)']}
-            componentRestrictions={{ country: 'ru' }}
           />
-          <button type="submit">search</button>
+          <button type="button" onClick={this.handleClick} name="send">
+            search
+          </button>
         </form>
 
         {currentTemp ? (
