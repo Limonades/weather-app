@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 class Day extends React.Component {
   defineDay = ts => {
@@ -42,5 +43,9 @@ class Day extends React.Component {
     );
   }
 }
+
+Day.propTypes = {
+  weekTemp: PropTypes.array.isRequired,
+};
 
 export default Day;

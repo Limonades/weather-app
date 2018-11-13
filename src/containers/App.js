@@ -2,7 +2,7 @@ import React from 'react';
 import Autocomplete from 'react-google-autocomplete';
 import { callApi } from '../utils/Api';
 import { DOMAIN_URL, KEY } from '../constants/ApiConstants';
-import { Loader } from '../constants/Loader';
+import { Loader } from '../components/Loader';
 import Day from '../components/Day';
 
 class App extends React.Component {

@@ -8,6 +8,7 @@
     "eslint-plugin-prettier": "^3.0.0",
     "gh-pages": "^2.0.1",
     "node-sass": "^4.9.4",
+    "prop-types": "^15.6.2",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
     "react-google-autocomplete": "^1.0.17",
