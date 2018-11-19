@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import './index.sass';
 
-class Day extends React.Component {
+class Week extends React.Component {
   defineDay = ts => {
     // console.log(new Date(1000 * ts));
     switch (new Date(1000 * ts).getDay()) {
@@ -28,12 +29,11 @@ class Day extends React.Component {
   render() {
     const { weekTemp } = this.props;
     return (
-      // TODO remove inline styles
       <div>
-        <h5 style={{ marginBotoom: 0 }}>forecast for the week</h5>
-        <div style={{ display: `flex` }}>
+        <h5 className="week__title">forecast for the week</h5>
+        <div className="week__day-wrap">
           {weekTemp.slice(1, 8).map((day, index) => (
-            <div style={{ marginRight: `36px` }} key={index}>
+            <div className="week__day" key={index}>
               <p>{this.defineDay(day.ts)}</p>
               <p>{day.temp}°</p>
             </div>
@@ -44,8 +44,8 @@ class Day extends React.Component {
   }
 }
 
-Day.propTypes = {
+Week.propTypes = {
   weekTemp: PropTypes.array.isRequired,
 };
 
-export default Day;
+export default Week;

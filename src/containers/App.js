@@ -3,7 +3,8 @@ import Autocomplete from 'react-google-autocomplete';
 import { callApi } from '../utils/Api';
 import { DOMAIN_URL, KEY } from '../constants/ApiConstants';
 import { Loader } from '../components/Loader';
-import Day from '../components/Day';
+import Week from '../components/Week';
+import FavoritesBar from '../components/FavoritesBar';
 
 class App extends React.Component {
   constructor() {
@@ -18,7 +19,16 @@ class App extends React.Component {
       weekTemp: null,
       lat: null,
       lng: null,
+      favorites: [],
     };
+  }
+
+  componentDidMount() {
+    const localData = JSON.parse(localStorage.getItem('localWeatherData'));
+
+    if (localData) {
+      this.setState({ favorites: localData });
+    }
   }
 
   handleSubmit = e => {
@@ -31,9 +41,24 @@ class App extends React.Component {
   };
 
   handleChange = e => {
+    const { lat, lng, requestName } = this.state;
+
     this.setState({
       searchValue: e.target.value,
     });
+
+    if (lat && lng) {
+      this.setState({
+        lat: null,
+        lng: null,
+      });
+    }
+
+    if (requestName) {
+      this.setState({
+        requestName: '',
+      });
+    }
   };
 
   getData = (lat, lng, city) => {
@@ -82,8 +107,6 @@ class App extends React.Component {
           error: null,
           isLoading: false,
           weekTemp: response.data,
-          lng: null,
-          lat: null,
         });
       })
       .catch(err => {
@@ -97,17 +120,52 @@ class App extends React.Component {
       });
   };
 
-  render() {
-    const {
-      requestName,
-      searchValue,
-      currentTemp,
-      error,
-      isLoading,
-      weekTemp,
+  addToFavorites = () => {
+    const { lat, lng, requestName, favorites } = this.state;
+
+    const data = {
+      id: Date.now(),
       lat,
       lng,
-    } = this.state;
+      requestName,
+    };
+
+    const newFavorites = favorites;
+    newFavorites.unshift(data);
+
+    const localData = JSON.stringify(newFavorites);
+
+    localStorage.setItem('localWeatherData', localData);
+
+    return this.setState({
+      favorites: newFavorites,
+    });
+  };
+
+  checkRequest = place => {
+    const { lat, lng } = this.state;
+
+    if (place.geometry) {
+      const latC = place.geometry.viewport.l.j;
+      const lngC = place.geometry.viewport.l.l;
+      const cityC = place.formatted_address;
+
+      this.setState({
+        requestName: cityC,
+        searchValue: '',
+        lat: latC,
+        lng: lngC,
+      });
+
+      return this.getData(latC, lngC, cityC);
+    }
+    const city = place.name;
+
+    this.getData(lat, lng, city);
+  };
+
+  render() {
+    const { requestName, searchValue, currentTemp, error, isLoading, weekTemp, favorites } = this.state;
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
@@ -116,23 +174,7 @@ class App extends React.Component {
             onChange={this.handleChange}
             style={{ width: '50%' }}
             onPlaceSelected={place => {
-              if (place.geometry) {
-                const latC = place.geometry.viewport.l.j;
-                const lngC = place.geometry.viewport.l.l;
-                const cityC = place.formatted_address;
-
-                this.setState({
-                  requestName: cityC,
-                  searchValue: '',
-                  lat: latC,
-                  lng: lngC,
-                });
-
-                return this.getData(latC, lngC, cityC);
-              }
-              const city = place.name;
-
-              this.getData(lat, lng, city);
+              this.checkRequest(place);
             }}
             types={['(regions)']}
           />
@@ -140,16 +182,19 @@ class App extends React.Component {
             search
           </button>
         </form>
-
         {currentTemp ? (
           <div>
             <h1>{requestName}</h1>
+            <button onClick={this.addToFavorites} type="button">
+              Добавить в Избранное
+            </button>
             <p style={{ fontSize: `${36}px` }}>Now {currentTemp}° градусиков</p>
           </div>
         ) : null}
         {error ? <p style={{ fontSize: `${36}px`, color: 'brown' }}>{error}</p> : null}
         {isLoading ? <Loader /> : null}
-        {weekTemp ? <Day weekTemp={weekTemp} /> : null}
+        {weekTemp ? <Week weekTemp={weekTemp} /> : null}
+        {favorites.length ? <FavoritesBar favorites={favorites} /> : null}
       </div>
     );
   }
