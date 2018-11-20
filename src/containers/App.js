@@ -31,6 +31,21 @@ class App extends React.Component {
     }
   }
 
+  componentDidUpdate() {
+    const { favorites } = this.state;
+
+    const localFavorites = JSON.parse(localStorage.getItem('localWeatherData'));
+    const stateFavorites = JSON.stringify(favorites);
+
+    if (!localFavorites) {
+      return false;
+    }
+
+    if (favorites.length !== localFavorites.length) {
+      localStorage.setItem('localWeatherData', stateFavorites);
+    }
+  }
+
   handleSubmit = e => {
     e.preventDefault();
   };
@@ -62,6 +77,11 @@ class App extends React.Component {
   };
 
   getData = (lat, lng, city) => {
+    // TODO поиск по избранным
+    // console.log('privet');
+    // console.log(lat);
+    // console.log(lng);
+    // console.log(city);
     if (!lat && !lng && city === '') {
       return this.setState({
         searchValue: '',
@@ -131,6 +151,9 @@ class App extends React.Component {
     };
 
     const newFavorites = favorites;
+    // TODO не добавлять такой же элемент
+    // console.log(newFavorites.includes(data));
+
     newFavorites.unshift(data);
 
     const localData = JSON.stringify(newFavorites);
@@ -139,6 +162,24 @@ class App extends React.Component {
 
     return this.setState({
       favorites: newFavorites,
+    });
+  };
+
+  removeFromFavorites = e => {
+    const { favorites } = this.state;
+    const favoritesCopy = favorites.slice();
+    const favoritesId = [];
+
+    favoritesCopy.forEach(item => {
+      favoritesId.push(item.id);
+    });
+
+    const index = favoritesId.indexOf(e);
+
+    favoritesCopy.splice(index, 1);
+
+    this.setState({
+      favorites: favoritesCopy,
     });
   };
 
@@ -165,7 +206,17 @@ class App extends React.Component {
   };
 
   render() {
-    const { requestName, searchValue, currentTemp, error, isLoading, weekTemp, favorites } = this.state;
+    const {
+      requestName,
+      searchValue,
+      currentTemp,
+      error,
+      isLoading,
+      weekTemp,
+      favorites,
+      lat,
+      lng,
+    } = this.state;
     return (
       <div>
         <form onSubmit={this.handleSubmit}>
@@ -194,7 +245,15 @@ class App extends React.Component {
         {error ? <p style={{ fontSize: `${36}px`, color: 'brown' }}>{error}</p> : null}
         {isLoading ? <Loader /> : null}
         {weekTemp ? <Week weekTemp={weekTemp} /> : null}
-        {favorites.length ? <FavoritesBar favorites={favorites} /> : null}
+        {favorites.length ? (
+          <FavoritesBar
+            removeFromFavorites={this.removeFromFavorites}
+            lat={lat}
+            lng={lng}
+            favorites={favorites}
+            getData={this.getData}
+          />
+        ) : null}
       </div>
     );
   }
