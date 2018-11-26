@@ -11,7 +11,6 @@ class FavoritesItem extends React.Component {
   handleSearch = e => {
     e.preventDefault();
     const { lat, lng, name, getData } = this.props;
-    console.log(lat);
     getData(lat, lng, name);
   };
 
