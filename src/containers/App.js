@@ -127,6 +127,7 @@ class App extends React.Component {
           error: null,
           isLoading: false,
           weekTemp: response.data,
+          requestName: `${city}`
         });
       })
       .catch(err => {
@@ -151,7 +152,7 @@ class App extends React.Component {
     };
 
     const newFavorites = favorites;
-    // TODO не добавлять такой же элемент
+    // TODO не добавлять такой же элемент (po cityname)
     // console.log(newFavorites.includes(data));
 
     newFavorites.unshift(data);
@@ -192,7 +193,6 @@ class App extends React.Component {
       const cityC = place.formatted_address;
 
       this.setState({
-        requestName: cityC,
         searchValue: '',
         lat: latC,
         lng: lngC,

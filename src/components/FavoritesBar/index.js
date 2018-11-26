@@ -4,7 +4,7 @@ import FavoritesItem from '../FavoritesItem';
 
 class FavoritesBar extends React.Component {
   render() {
-    const { favorites, removeFromFavorites, lat, lng, getData } = this.props;
+    const { favorites, removeFromFavorites, getData } = this.props;
     return (
       <div>
         <h2>Favorites</h2>
@@ -16,8 +16,8 @@ class FavoritesBar extends React.Component {
               key={town.id}
               id={town.id}
               name={town.requestName}
-              lat={lat}
-              lng={lat}
+              lat={town.lat}
+              lng={town.lng}
             />
           ))}
         </ul>
@@ -29,6 +29,7 @@ class FavoritesBar extends React.Component {
 FavoritesBar.propTypes = {
   favorites: PropTypes.array.isRequired,
   removeFromFavorites: PropTypes.func.isRequired,
+  getData: PropTypes.func.isRequired,
 };
 
 export default FavoritesBar;
