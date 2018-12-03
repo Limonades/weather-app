@@ -1,7 +1,6 @@
 import React from 'react';
 import Autocomplete from 'react-google-autocomplete';
 import { callApi } from '../utils/Api';
-import { checkFavorites } from '../utils/CheckFavorites';
 import { DOMAIN_URL, KEY } from '../constants/ApiConstants';
 import { Loader } from '../components/Loader';
 import Week from '../components/Week';
@@ -164,7 +163,7 @@ class App extends React.Component {
       newFavoritesNames.push(item.requestName);
     });
 
-    if (!checkFavorites(newFavoritesNames, data.requestName)) {
+    if (!this.checkFavorites(newFavoritesNames, data.requestName)) {
       return;
     }
 
@@ -198,6 +197,8 @@ class App extends React.Component {
       inFavorites: false,
     });
   };
+
+  checkFavorites = (arr, item) => arr.indexOf(item) === -1;
 
   checkRequest = place => {
     const { lat, lng } = this.state;
