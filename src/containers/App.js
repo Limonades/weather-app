@@ -1,6 +1,7 @@
 import React from 'react';
 import Autocomplete from 'react-google-autocomplete';
 import { callApi } from '../utils/Api';
+import { checkFavorites } from '../utils/CheckFavorites';
 import { DOMAIN_URL, KEY } from '../constants/ApiConstants';
 import { Loader } from '../components/Loader';
 import Week from '../components/Week';
@@ -20,7 +21,6 @@ class App extends React.Component {
       lat: null,
       lng: null,
       favorites: [],
-      inFavorites: false,
     };
   }
 
@@ -52,10 +52,10 @@ class App extends React.Component {
   };
 
   handleClick = () => {
-    const { lat, lng, searchValue, requestName} = this.state;
+    const { lat, lng, searchValue, requestName } = this.state;
 
     // if (searchValue !== '') {
-      return this.getData(lat, lng, searchValue);
+    return this.getData(lat, lng, searchValue);
     // }
 
     // this.setState({
@@ -67,7 +67,7 @@ class App extends React.Component {
   };
 
   handleChange = e => {
-    const { lat, lng, requestName, inFavorites } = this.state;
+    const { lat, lng, requestName } = this.state;
 
     this.setState({
       searchValue: e.target.value,
@@ -77,12 +77,6 @@ class App extends React.Component {
       this.setState({
         lat: null,
         lng: null,
-      });
-    }
-
-    if (inFavorites) {
-      this.setState({
-        inFavorites: false,
       });
     }
 
@@ -154,7 +148,7 @@ class App extends React.Component {
   };
 
   addToFavorites = () => {
-    const { lat, lng, requestName, favorites, inFavorites } = this.state;
+    const { lat, lng, requestName, favorites } = this.state;
 
     const data = {
       id: Date.now(),
@@ -163,37 +157,27 @@ class App extends React.Component {
       requestName,
     };
 
-    console.log(requestName);
-
     const newFavorites = favorites;
-    console.log(newFavorites);
-    // TODO не добавлять такой же элемент (po cityname)
-    // console.log(newFavorites.includes(data));
+    const newFavoritesNames = [];
 
-    // TODO проверь - нормальный ли способ проверки избранных
-    // 1 добавил нових стейт "изфейворит"
-    // 2 проверяю по нему ниже если он фолс то могу добавлять город (и проверку города тоже проверь)
-    // 3 обновляю изФейворит каждый раз нажатии на инпут и по кнопке удалить
     newFavorites.forEach(item => {
-      if (requestName === item.requestName) {
-        return this.setState({
-          inFavorites: true,
-        });
-      }
+      newFavoritesNames.push(item.requestName);
     });
 
-    if (!inFavorites) {
-      newFavorites.unshift(data);
-
-      const localData = JSON.stringify(newFavorites);
-
-      localStorage.setItem('localWeatherData', localData);
-
-      return this.setState({
-        favorites: newFavorites,
-        inFavorites: true,
-      });
+    if (!checkFavorites(newFavoritesNames, data.requestName)) {
+      return;
     }
+
+    newFavorites.unshift(data);
+
+    const localData = JSON.stringify(newFavorites);
+
+    localStorage.setItem('localWeatherData', localData);
+
+    this.setState({
+      favorites: newFavorites,
+      inFavorites: true,
+    });
   };
 
   removeFromFavorites = e => {
