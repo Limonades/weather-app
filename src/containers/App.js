@@ -52,8 +52,18 @@ class App extends React.Component {
   };
 
   handleClick = () => {
-    const { lat, lng, searchValue } = this.state;
-    this.getData(lat, lng, searchValue);
+    const { lat, lng, searchValue, requestName} = this.state;
+
+    // if (searchValue !== '') {
+      return this.getData(lat, lng, searchValue);
+    // }
+
+    // this.setState({
+    //   currentTemp: null,
+    //   error: 'Не в этот раз, петушок)',
+    //   isLoading: false,
+    //   weekTemp: null,
+    // });
   };
 
   handleChange = e => {
