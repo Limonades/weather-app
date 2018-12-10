@@ -16,8 +16,6 @@ class FavoritesItem extends React.Component {
 
   render() {
     const { name, id } = this.props;
-    console.log(name);
-    // TODO срабатывает консоль всегда(бесит)
     return (
       <li>
         <a onClick={this.handleSearch} href="/">
