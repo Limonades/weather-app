@@ -108,6 +108,8 @@ class App extends React.Component {
     if (!lat && !lng && city !== '') {
       return callApi(`${DOMAIN_URL}/forecast/daily?city=${city}&key=${KEY}`)
         .then(response => {
+          window.location.hash = `?city=${city}`;
+
           this.setState({
             requestName: response.city_name,
             currentTemp: response.data[0].temp,
@@ -127,6 +129,8 @@ class App extends React.Component {
 
     callApi(`${DOMAIN_URL}/?lat=${lat}&lon=${lng}&key=${KEY}`)
       .then(response => {
+        window.location.hash = `?lat=${lat}&lon=${lng}`;
+
         this.setState({
           currentTemp: response.data[0].temp,
           error: null,
@@ -144,6 +148,13 @@ class App extends React.Component {
           lat: null,
         });
       });
+  };
+
+  changeHash = () => {
+    const { lat } = this.state;
+
+    // history.pushState(this.state, 'page 2', `?city=${lat}`);
+    // window.location.hash = `?city=${lat}`;
   };
 
   addToFavorites = () => {
@@ -214,11 +225,15 @@ class App extends React.Component {
         lng: lngC,
       });
 
+      this.changeHash();
+
       return this.getData(latC, lngC, cityC);
     }
     const city = place.name;
 
     this.getData(lat, lng, city);
+
+    this.changeHash();
   };
 
   render() {
