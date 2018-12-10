@@ -26,6 +26,13 @@ class App extends React.Component {
   componentDidMount() {
     const localData = JSON.parse(localStorage.getItem('localWeatherData'));
 
+    this.getUrl();
+
+    // TODO сделать проверку на изменения хеша
+    window.addEventListener('popstate', () => {
+      this.getUrl();
+    });
+
     if (localData) {
       this.setState({ favorites: localData });
     }
@@ -33,6 +40,10 @@ class App extends React.Component {
 
   componentDidUpdate() {
     const { favorites } = this.state;
+
+    // window.onpopstate = function() {
+    //   this.getUrl();
+    // };
 
     const localFavorites = JSON.parse(localStorage.getItem('localWeatherData'));
     const stateFavorites = JSON.stringify(favorites);
@@ -116,7 +127,7 @@ class App extends React.Component {
             weekTemp: response.data,
           });
           // window.location.hash = `?city=${city}`;
-          this.changeHash(response.lat, response.lon);
+          this.changeHash(response.lat, response.lon, response.name);
         })
         .catch(err => {
           this.setState({
@@ -137,7 +148,7 @@ class App extends React.Component {
           requestName: `${city}`,
         });
         // window.location.hash = `?lat=${lat}&lon=${lng}`;
-        this.changeHash(lat, lng);
+        this.changeHash(lat, lng, city);
       })
       .catch(err => {
         this.setState({
@@ -150,16 +161,30 @@ class App extends React.Component {
       });
   };
 
-  changeHash = (lat, lng) => {
+  changeHash = (lat, lng, city) => {
     const state = {
       lat,
       lng,
+      city,
     };
 
     const title = ``;
-    const url = `limoweather?lat=${lat}&lon=${lng}`;
+    const url = `limoweather?lat=${lat}&lng=${lng}&city=${city}`;
 
     window.history.pushState(state, title, url);
+  };
+
+  // TODO сделать проверку на вызов гет дата
+  getUrl = () => {
+    const url = window.location.search;
+    const urlParams = new URLSearchParams(url);
+    const urlLat = urlParams.get('lat');
+    const urlLng = urlParams.get('lng');
+    const urlName = urlParams.get('city');
+
+    console.log('pidar');
+
+    this.getData(urlLat, urlLng, urlName);
   };
 
   addToFavorites = () => {
@@ -257,6 +282,7 @@ class App extends React.Component {
             onChange={this.handleChange}
             style={{ width: '50%' }}
             onPlaceSelected={place => {
+              console.log(place);
               this.checkRequest(place);
             }}
             types={['(regions)']}
