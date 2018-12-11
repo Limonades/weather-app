@@ -20,6 +20,7 @@ class App extends React.Component {
       lat: null,
       lng: null,
       favorites: [],
+      popstateEvent: false,
     };
   }
 
@@ -28,8 +29,11 @@ class App extends React.Component {
 
     this.getUrl();
 
-    // TODO сделать проверку на изменения хеша
     window.addEventListener('popstate', () => {
+      this.setState({
+        popstateEvent: true,
+      });
+
       this.getUrl();
     });
 
@@ -40,10 +44,6 @@ class App extends React.Component {
 
   componentDidUpdate() {
     const { favorites } = this.state;
-
-    // window.onpopstate = function() {
-    //   this.getUrl();
-    // };
 
     const localFavorites = JSON.parse(localStorage.getItem('localWeatherData'));
     const stateFavorites = JSON.stringify(favorites);
@@ -64,16 +64,18 @@ class App extends React.Component {
   handleClick = () => {
     const { lat, lng, searchValue, requestName } = this.state;
 
-    // if (searchValue !== '') {
-    return this.getData(lat, lng, searchValue);
-    // }
+    if (searchValue !== '') {
+      return this.getData(lat, lng, searchValue);
+    }
 
-    // this.setState({
-    //   currentTemp: null,
-    //   error: 'Не в этот раз, петушок)',
-    //   isLoading: false,
-    //   weekTemp: null,
-    // });
+    this.setState({
+      currentTemp: null,
+      error: 'Не в этот раз, петушок)',
+      isLoading: false,
+      weekTemp: null,
+      lat: null,
+      lng: null,
+    });
   };
 
   handleChange = e => {
@@ -162,6 +164,14 @@ class App extends React.Component {
   };
 
   changeHash = (lat, lng, city) => {
+    const { popstateEvent } = this.state;
+
+    if (popstateEvent) {
+      return this.setState({
+        popstateEvent: false,
+      });
+    }
+
     const state = {
       lat,
       lng,
@@ -174,17 +184,22 @@ class App extends React.Component {
     window.history.pushState(state, title, url);
   };
 
-  // TODO сделать проверку на вызов гет дата
   getUrl = () => {
     const url = window.location.search;
-    const urlParams = new URLSearchParams(url);
-    const urlLat = urlParams.get('lat');
-    const urlLng = urlParams.get('lng');
-    const urlName = urlParams.get('city');
 
-    console.log('pidar');
+    if (url) {
+      const urlParams = new URLSearchParams(url);
+      const urlLat = urlParams.get('lat');
+      const urlLng = urlParams.get('lng');
+      const urlName = urlParams.get('city');
 
-    this.getData(urlLat, urlLng, urlName);
+      this.getData(urlLat, urlLng, urlName);
+    } else {
+      this.setState({
+        currentTemp: null,
+        weekTemp: null,
+      });
+    }
   };
 
   addToFavorites = () => {
@@ -216,7 +231,6 @@ class App extends React.Component {
 
     this.setState({
       favorites: newFavorites,
-      inFavorites: true,
     });
   };
 
@@ -235,7 +249,6 @@ class App extends React.Component {
 
     this.setState({
       favorites: favoritesCopy,
-      inFavorites: false,
     });
   };
 
@@ -245,8 +258,8 @@ class App extends React.Component {
     const { lat, lng } = this.state;
 
     if (place.geometry) {
-      const latC = place.geometry.viewport.l.j;
-      const lngC = place.geometry.viewport.l.l;
+      const latC = place.geometry.viewport.la.j;
+      const lngC = place.geometry.viewport.la.l;
       const cityC = place.formatted_address;
 
       this.setState({
