@@ -179,7 +179,7 @@ class App extends React.Component {
     };
 
     const title = ``;
-    const url = `limoweather?lat=${lat}&lng=${lng}&city=${city}`;
+    const url = `?lat=${lat}&lng=${lng}&city=${city}`;
 
     window.history.pushState(state, title, url);
   };
