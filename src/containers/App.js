@@ -62,7 +62,7 @@ class App extends React.Component {
   };
 
   handleClick = () => {
-    const { lat, lng, searchValue, requestName } = this.state;
+    const { lat, lng, searchValue } = this.state;
 
     if (searchValue !== '') {
       return this.getData(lat, lng, searchValue);
@@ -128,8 +128,8 @@ class App extends React.Component {
             isLoading: false,
             weekTemp: response.data,
           });
-          // window.location.hash = `?city=${city}`;
-          this.changeHash(response.lat, response.lon, response.name);
+          console.log(response);
+          this.changeHash(response.lat, response.lon, response.city_name);
         })
         .catch(err => {
           this.setState({
@@ -149,7 +149,6 @@ class App extends React.Component {
           weekTemp: response.data,
           requestName: `${city}`,
         });
-        // window.location.hash = `?lat=${lat}&lon=${lng}`;
         this.changeHash(lat, lng, city);
       })
       .catch(err => {
@@ -178,7 +177,7 @@ class App extends React.Component {
       city,
     };
 
-    const title = ``;
+    const title = '';
     const url = `?lat=${lat}&lng=${lng}&city=${city}`;
 
     window.history.pushState(state, title, url);
