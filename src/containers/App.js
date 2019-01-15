@@ -44,15 +44,17 @@ class App extends React.Component {
 
   componentDidUpdate() {
     const { favorites } = this.state;
+    // this.test();
 
     const localFavorites = JSON.parse(localStorage.getItem('localWeatherData'));
     const stateFavorites = JSON.stringify(favorites);
 
     if (!localFavorites) {
-      return false;
+      return;
     }
 
     if (favorites.length !== localFavorites.length) {
+      console.log(favorites.length);
       localStorage.setItem('localWeatherData', stateFavorites);
     }
   }
@@ -128,7 +130,6 @@ class App extends React.Component {
             isLoading: false,
             weekTemp: response.data,
           });
-          console.log(response);
           this.changeHash(response.lat, response.lon, response.city_name);
         })
         .catch(err => {
@@ -142,6 +143,7 @@ class App extends React.Component {
 
     callApi(`${DOMAIN_URL}/?lat=${lat}&lon=${lng}&key=${KEY}`)
       .then(response => {
+        // console.log(response);
         this.setState({
           currentTemp: response.data[0].temp,
           error: null,
@@ -224,6 +226,10 @@ class App extends React.Component {
 
     newFavorites.unshift(data);
 
+    if (newFavorites.length > 5) {
+      newFavorites.length = 5;
+    }
+
     const localData = JSON.stringify(newFavorites);
 
     localStorage.setItem('localWeatherData', localData);
@@ -253,12 +259,42 @@ class App extends React.Component {
 
   checkFavorites = (arr, item) => arr.indexOf(item) === -1;
 
+  test = () => {
+    const { favorites } = this.state;
+    const favArr = [];
+
+    let a;
+
+    favorites.forEach(item => {
+      console.log(item);
+      const d = item.lat.toString();
+      const b = item.lng.toString();
+      console.log(d);
+      console.log(b);
+      a = fetch(`${DOMAIN_URL}/?lat=${d}&lon=${b}&key=${KEY}`);
+      favArr.unshift(a);
+    });
+
+    Promise.all(favArr).then(response => {
+      response.forEach(i => {
+        sendFav(i.json());
+      });
+    });
+
+    const sendFav = resp => {
+      resp.then(data => {
+        console.log(data);
+      });
+    };
+  };
+
   checkRequest = place => {
     const { lat, lng } = this.state;
 
     if (place.geometry) {
-      const latC = place.geometry.viewport.la.j;
-      const lngC = place.geometry.viewport.la.l;
+      // console.log(place);
+      const latC = place.geometry.location.lat();
+      const lngC = place.geometry.location.lng();
       const cityC = place.formatted_address;
 
       this.setState({
@@ -294,7 +330,6 @@ class App extends React.Component {
             onChange={this.handleChange}
             style={{ width: '50%' }}
             onPlaceSelected={place => {
-              console.log(place);
               this.checkRequest(place);
             }}
             types={['(regions)']}

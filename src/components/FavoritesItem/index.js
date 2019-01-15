@@ -11,17 +11,17 @@ class FavoritesItem extends React.Component {
   handleSearch = e => {
     e.preventDefault();
     const { lat, lng, name, getData } = this.props;
+    // console.log(name);
     getData(lat, lng, name);
   };
 
   render() {
-    const { name, id } = this.props;
+    const { name } = this.props;
     return (
       <li>
         <a onClick={this.handleSearch} href="/">
           {name}
         </a>
-        {console.log(id)}
         <button onClick={this.handleClick} type="button">
           X
         </button>
