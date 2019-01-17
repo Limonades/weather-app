@@ -44,7 +44,6 @@ class App extends React.Component {
 
   componentDidUpdate() {
     const { favorites } = this.state;
-    // this.test();
 
     const localFavorites = JSON.parse(localStorage.getItem('localWeatherData'));
     const stateFavorites = JSON.stringify(favorites);
@@ -65,6 +64,7 @@ class App extends React.Component {
 
   handleClick = () => {
     const { lat, lng, searchValue } = this.state;
+    this.test();
 
     if (searchValue !== '') {
       return this.getData(lat, lng, searchValue);
@@ -261,31 +261,28 @@ class App extends React.Component {
 
   test = () => {
     const { favorites } = this.state;
-    const favArr = [];
 
-    let a;
+    const favArr = [];
+    let favItem;
 
     favorites.forEach(item => {
-      console.log(item);
-      const d = item.lat.toString();
-      const b = item.lng.toString();
-      console.log(d);
-      console.log(b);
-      a = fetch(`${DOMAIN_URL}/?lat=${d}&lon=${b}&key=${KEY}`);
-      favArr.unshift(a);
+      // console.log(item);
+      favItem = fetch(`${DOMAIN_URL}/?lat=${item.lat}&lon=${item.lng}&key=${KEY}`);
+      favArr.unshift(favItem);
     });
 
-    Promise.all(favArr).then(response => {
-      response.forEach(i => {
-        sendFav(i.json());
-      });
-    });
-
-    const sendFav = resp => {
+    const process = resp => {
       resp.then(data => {
         console.log(data);
       });
     };
+
+    Promise.all(favArr).then(response => {
+      // console.log(response);
+      response.map(val => {
+        process(val.json());
+      });
+    });
   };
 
   checkRequest = place => {
