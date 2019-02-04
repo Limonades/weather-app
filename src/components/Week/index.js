@@ -7,19 +7,19 @@ class Week extends React.Component {
     // console.log(new Date(1000 * ts));
     switch (new Date(1000 * ts).getDay()) {
       case 0:
-        return 'Sunday';
+        return 'S';
       case 1:
-        return 'Monday';
+        return 'M';
       case 2:
-        return 'Tuesday';
+        return 'T';
       case 3:
-        return 'Wednesday';
+        return 'W';
       case 4:
-        return 'Thursday';
+        return 'T';
       case 5:
-        return 'Friday';
+        return 'F';
       case 6:
-        return 'Saturday';
+        return 'S';
       default:
         console.log('error');
         break;
@@ -29,12 +29,12 @@ class Week extends React.Component {
   render() {
     const { weekTemp } = this.props;
     return (
-      <div>
-        <h5 className="week__title">forecast for the week</h5>
+      <div className="week__week">
         <div className="week__day-wrap">
           {weekTemp.slice(1, 8).map((day, index) => (
             <div className="week__day" key={index}>
               <p>{this.defineDay(day.ts)}</p>
+              <i>w</i>
               <p>{day.temp}°</p>
             </div>
           ))}

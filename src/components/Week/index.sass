@@ -2,11 +2,63 @@
     &__title
         margin-bottom: 0
 
+    &__week
+        margin-bottom: 18px
+
     &__day
-        margin-right: 36px
+        flex-grow: 1
+        flex-basis: 0
+        text-align: center
+        color: white
+        text-transform: uppercase
+        z-index: 1
+        padding: 0 10px
+        position: relative
+
+        &::after
+            content: ''
+            position: absolute
+            top: 0
+            bottom: 0
+            right: 0
+            width: 1px
+            height: 68%
+            margin: auto
+            background-color: white
+            opacity: .4
 
         &:last-child
-            margin-right: 0
+            &:after
+                display: none
 
         &-wrap
             display: flex
+
+        p
+            font-size: 14px
+
+            &:first-child
+                margin-bottom: 8px
+
+            &:last-child
+                font-size: 16px
+
+        i
+            display: inline-block
+            font-size: 24px
+            margin-bottom: 10px
+
+    &__day-wrap
+        position: relative
+        overflow: hidden
+        padding: 18px 0
+
+        &::after
+            position: absolute
+            top: -10px
+            left: -10px
+            content: ''
+            background-color: rgba(0, 0, 35, 0.3)
+            filter: blur(10px)
+            width: 105%
+            height: 140%

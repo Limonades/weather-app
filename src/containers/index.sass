@@ -1,0 +1,138 @@
+@import "./../assets/sass/variables/index.sass"
+
+.form
+    margin-bottom: 18px
+
+    &__input-wrap
+        display: flex
+        align-items: center
+        position: relative
+        overflow: hidden
+        padding: 14px
+        border-radius: 5px
+
+        &::after
+            position: absolute
+            top: -10px
+            left: -10px
+            content: ''
+            background-color: $dark-navy-blue-30
+            filter: blur(10px)
+            width: 105%
+            height: 140%
+
+        input
+            flex-grow: 1
+            background: transparent
+            box-shadow: unset
+            outline: unset
+            border: unset
+            padding: 0 6px
+
+            &::-webkit-input-placeholder
+                color: #E6E6E6
+
+            &::-moz-placeholder
+                color: #E6E6E6
+
+            &:-ms-input-placeholder
+                color: #E6E6E6
+
+            &:-moz-placeholder
+                color: #E6E6E6
+
+        > *
+            z-index: 1
+
+        button
+            padding: 0
+            border: unset
+            background: transparent
+            outline: none
+            cursor: pointer
+
+.current-info
+    position: relative
+    overflow: hidden
+    padding: 20px
+
+    &::after
+        position: absolute
+        top: -10px
+        left: -10px
+        content: ''
+        background-color: rgba(0, 0, 35, 0.2)
+        filter: blur(3px)
+        width: 105%
+        height: 110%
+
+    > *
+        z-index: 1
+
+    &__title
+        margin: 0
+        text-transform: uppercase
+
+    &__title-wrap
+        position: relative
+        padding-bottom: 6px
+        margin-bottom: 8px
+        padding-right: 30px
+        border-bottom: 1px solid #E6E6E6
+
+    &__favorite-btn
+        position: absolute
+        right: 0
+        top: 0
+        padding: 0
+        background: transparent
+        border: unset
+        box-shadow: unset
+
+    &__date
+        position: relative
+        font-size: 14px
+        font-weight: 300
+        color: white
+        margin-bottom: 18px
+
+    &__info-wrap
+        display: flex
+        justify-content: flex-end
+        align-items: flex-end
+        z-index: 10
+        position: relative
+
+    &__temp
+        color: white
+        font-size: 88px
+        line-height: 78px
+        letter-spacing: -4px
+
+    &__details
+        margin-right: auto
+
+        p
+            font-size: 16px
+            color: white
+            margin-bottom: 10px
+
+            &:last-child
+                margin-bottom: 0
+
+    &__icon-wrap
+        margin-right: 26px
+        text-align: center
+
+        i
+            font-weight: 500
+            color: white
+            font-size: 60px
+
+        p
+            color: white
+            font-size: 16px
+
+    &__wrap
+        transition: filter .2s ease
+        will-change: filter
