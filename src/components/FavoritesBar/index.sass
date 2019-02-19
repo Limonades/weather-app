@@ -14,6 +14,10 @@
         font-weight: 500
         margin-bottom: 8px
 
+        @media screen and (max-width: 639px)
+            margin-bottom: 20px
+
+
     svg
         margin-right: 6px
 
@@ -38,6 +42,11 @@
         overflow: hidden
         transition: background-color .3s ease
 
+        @media screen and (max-width: 639px)
+            flex-wrap: wrap
+            margin-bottom: 10px
+            padding: 6px 14px
+
         &::after
             content: ''
             width: 0
@@ -48,6 +57,11 @@
             background-color: rgba(216, 216, 216, 0.2)
             transition: width .4s ease
             will-change: width
+
+            @media screen and (max-width: 639px)
+                width: 100%
+                border-radius: 5px
+                background-color: rgba(216, 216, 216, 0.1)
 
 
         &:hover
@@ -66,6 +80,9 @@
             transition: transform .8s ease
             will-change: transform
 
+            @media screen and (max-width: 639px)
+                transform: translateX(-10px)
+
         p
             max-width: 284px
             width: 100%
@@ -81,6 +98,9 @@
         z-index: 1
         outline: none
         cursor: pointer
+
+        @media screen and (max-width: 639px)
+            transform: translateX(0)
 
         svg
             margin-right: 0

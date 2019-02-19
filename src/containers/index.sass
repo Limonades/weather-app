@@ -11,6 +11,12 @@
         padding: 14px
         border-radius: 5px
 
+        @media screen and (max-width: 639px)
+            padding: 10px
+
+            svg
+                height: 20px
+
         &::after
             position: absolute
             top: -10px
@@ -56,6 +62,9 @@
     overflow: hidden
     padding: 20px
 
+    @media screen and (max-width: 639px)
+        padding: 20px 10px
+
     &::after
         position: absolute
         top: -10px
@@ -89,12 +98,20 @@
         border: unset
         box-shadow: unset
 
+        @media screen and (max-width: 639px)
+            svg
+                height: 20px
+
     &__date
         position: relative
         font-size: 14px
         font-weight: 500
         color: white
         margin-bottom: 24px
+
+        @media screen and (max-width: 639px)
+            font-size: 12px
+            font-weight: 400
 
     &__info-wrap
         display: flex
@@ -103,11 +120,19 @@
         z-index: 10
         position: relative
 
+        @media screen and (max-width: 639px)
+            flex-wrap: wrap
+            justify-content: center
+
     &__temp
         color: white
         font-size: 88px
         line-height: 78px
         letter-spacing: -4px
+
+        @media screen and (max-width: 639px)
+            margin-top: 20px
+            font-size: 70px
 
     &__details
         margin-right: auto
@@ -116,6 +141,10 @@
             font-size: 16px
             color: white
             margin-bottom: 10px
+
+            @media screen and (max-width: 639px)
+                font-size: 14px
+
 
             &:last-child
                 margin-bottom: 0
@@ -130,9 +159,16 @@
             font-size: 36px
             margin-bottom: 10px
 
+            @media screen and (max-width: 639px)
+                font-size: 28px
+                margin-bottom: 4px
+
         p
             color: white
             font-size: 16px
+
+            @media screen and (max-width: 639px)
+                font-size: 14px
 
     &__wrap
         transition: filter .2s ease
