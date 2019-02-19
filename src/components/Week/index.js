@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import './index.sass';
+import { convertIcon } from '../../utils/Icons';
 
 class Week extends React.Component {
   defineDay = ts => {
@@ -34,7 +35,7 @@ class Week extends React.Component {
           {weekTemp.slice(1, 8).map((day, index) => (
             <div className="week__day" key={index}>
               <p>{this.defineDay(day.ts)}</p>
-              <i>w</i>
+              <i className={convertIcon(day.weather.icon)} />
               <p>{day.temp}°</p>
             </div>
           ))}

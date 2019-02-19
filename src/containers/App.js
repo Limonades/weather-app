@@ -6,6 +6,7 @@ import { DOMAIN_URL, KEY } from '../constants/ApiConstants';
 import { Loader } from '../components/Loader';
 import Week from '../components/Week';
 import FavoritesBar from '../components/FavoritesBar';
+import { convertIcon } from '../utils/Icons';
 
 class App extends React.Component {
   constructor() {
@@ -26,6 +27,8 @@ class App extends React.Component {
       favorites: [],
       popstateEvent: false,
       favoritesWeather: [],
+      currentWeatherIcon: null,
+      weekIcons: null,
     };
   }
 
@@ -119,9 +122,11 @@ class App extends React.Component {
     this.setState({
       searchValue: '',
       // currentTemp: null,
-      error: null,
+      // error: null,
       isLoading: true,
+      // currentWeatherIcon: null,
       // weekTemp: null,
+      // weekIcons: null,
     });
 
     if (!lat && !lng && city !== '') {
@@ -134,6 +139,8 @@ class App extends React.Component {
             error: null,
             isLoading: false,
             weekTemp: response.data,
+            currentWeatherIcon: response.data[0].weather.icon,
+            weekIcons: response.data,
           });
           this.changeHash(response.lat, response.lon, response.city_name);
         })
@@ -142,6 +149,9 @@ class App extends React.Component {
             error: err.message,
             currentTemp: null,
             isLoading: false,
+            lng: null,
+            lat: null,
+            weekTemp: null,
           });
         });
     }
@@ -158,6 +168,7 @@ class App extends React.Component {
           isLoading: false,
           weekTemp: response.data,
           requestName: `${city}`,
+          currentWeatherIcon: response.data[0].weather.icon,
         });
         this.changeHash(lat, lng, city);
       })
@@ -168,6 +179,7 @@ class App extends React.Component {
           isLoading: false,
           lng: null,
           lat: null,
+          weekTemp: null,
         });
       });
   };
@@ -413,6 +425,8 @@ class App extends React.Component {
       wind,
       weatherDescr,
       wetness,
+      currentWeatherIcon,
+      weekIcons,
     } = this.state;
     return (
       <div className={isLoading ? 'main-wrap loading' : 'main-wrap'}>
@@ -478,24 +492,28 @@ class App extends React.Component {
                 <p className="current-info__date">{this.getCurrentDate()}</p>
                 <div className="current-info__info-wrap">
                   <div className="current-info__details">
-                    <p>Wind {wind} ms</p>
-                    <p>Wetness {wetness}%</p>
+                    <p>
+                      Wind <strong>{wind}</strong> ms
+                    </p>
+                    <p>
+                      Wetness <strong>{wetness}%</strong>
+                    </p>
                   </div>
                   <div className="current-info__icon-wrap">
-                    <i>O</i>
+                    <i className={convertIcon(currentWeatherIcon)} />
                     <p>{weatherDescr}</p>
                   </div>
                   <p className="current-info__temp">{currentTemp}°</p>
                 </div>
               </div>
             ) : null}
-            {error ? <p style={{ fontSize: `${36}px`, color: 'brown' }}>{error}</p> : null}
+            {error ? <p className="error">{error}</p> : null}
             {isLoading ? (
               <div className="loader-wrap">
                 <Loader />
               </div>
             ) : null}
-            {weekTemp ? <Week weekTemp={weekTemp} /> : null}
+            {weekTemp ? <Week weekIcons={weekIcons} weekTemp={weekTemp} /> : null}
           </div>
         </div>
         {favorites.length ? (
